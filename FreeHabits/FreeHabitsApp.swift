@@ -10,14 +10,12 @@ import SwiftData
 
 @main
 struct FreeHabitsApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
+    var sharedModelContainer: ModelContainer = {
+        let config = ModelConfiguration(cloudKitDatabase: .none)
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            return try ModelContainer(for: Habit.self, HabitCompletion.self, configurations: config)
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
@@ -25,7 +23,11 @@ struct FreeHabitsApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if hasCompletedOnboarding {
+                ContentView()
+            } else {
+                OnboardingView(hasCompletedOnboarding: $hasCompletedOnboarding)
+            }
         }
         .modelContainer(sharedModelContainer)
     }
