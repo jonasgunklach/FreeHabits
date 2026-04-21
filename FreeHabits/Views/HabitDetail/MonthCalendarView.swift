@@ -35,7 +35,7 @@ struct MonthCalendarView: View {
     }
 
     private var completedDays: Set<Date> {
-        Set(habit.completions.map { calendar.startOfDay(for: $0.date) })
+        Set((habit.completions ?? []).map { calendar.startOfDay(for: $0.date) })
     }
 
     var body: some View {
@@ -68,7 +68,7 @@ struct MonthCalendarView: View {
 
             // Weekday labels
             HStack(spacing: 0) {
-                ForEach(weekdaySymbols, id: \.self) { sym in
+                ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { _, sym in
                     Text(sym)
                         .font(.caption2.weight(.medium))
                         .foregroundStyle(.secondary)

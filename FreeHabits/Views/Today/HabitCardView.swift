@@ -31,24 +31,11 @@ struct HabitCardView: View {
                         .foregroundStyle(isCompleted ? .white : habit.habitColor)
                 }
 
-                VStack(spacing: 2) {
-                    Text(habit.name)
-                        .font(.subheadline.weight(.medium))
-                        .lineLimit(2, reservesSpace: true)
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(isCompleted ? .secondary : .primary)
-
-                    if habit.currentStreak > 0 {
-                        HStack(spacing: 2) {
-                            Image(systemName: "flame.fill")
-                                .font(.system(size: 9))
-                                .foregroundStyle(.orange)
-                            Text("\(habit.currentStreak)")
-                                .font(.caption2.weight(.medium))
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
+                Text(habit.name)
+                    .font(.subheadline.weight(.medium))
+                    .lineLimit(2, reservesSpace: true)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(isCompleted ? .secondary : .primary)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
@@ -72,11 +59,12 @@ struct HabitCardView: View {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
             let cal = Calendar.current
             if isCompleted {
-                habit.completions
+                (habit.completions ?? [])
                     .filter { cal.isDate($0.date, inSameDayAs: date) }
                     .forEach { modelContext.delete($0) }
             } else {
-                habit.completions.append(HabitCompletion(date: date))
+                if habit.completions == nil { habit.completions = [] }
+                habit.completions!.append(HabitCompletion(date: date))
             }
         }
     }

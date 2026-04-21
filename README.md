@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="FreeHabits/Assets.xcassets/AppIcon.appiconset/AppIcon.png" width="120" style="border-radius: 22px" />
+</p>
+
 # FreeHabits
 
 A clean, native iOS habit tracker built entirely with **SwiftUI** and **SwiftData** — designed to feel like it came straight from Apple.

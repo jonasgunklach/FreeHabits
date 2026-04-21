@@ -178,7 +178,7 @@ struct HabitDetailView: View {
 
             HStack(spacing: 0) {
                 ForEach(last7Days, id: \.self) { day in
-                    let completed = habit.completions.contains {
+                    let completed = (habit.completions ?? []).contains {
                         calendar.isDate($0.date, inSameDayAs: day)
                     }
                     let isToday = calendar.isDateInToday(day)

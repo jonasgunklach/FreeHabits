@@ -25,7 +25,7 @@ final class Habit {
     var reminderTime: TimeInterval?
 
     @Relationship(deleteRule: .cascade, inverse: \HabitCompletion.habit)
-    var completions: [HabitCompletion] = []
+    var completions: [HabitCompletion]?
 
     init(name: String, icon: String = "star.fill", colorName: String = "blue", sortOrder: Int = 0) {
         self.name = name
@@ -57,7 +57,7 @@ final class Habit {
 
     func isCompleted(on date: Date) -> Bool {
         let cal = Calendar.current
-        return completions.contains { cal.isDate($0.date, inSameDayAs: date) }
+        return (completions ?? []).contains { cal.isDate($0.date, inSameDayAs: date) }
     }
 
     var isDueToday: Bool {
@@ -68,7 +68,7 @@ final class Habit {
     var completionRate30Days: Double {
         let cal = Calendar.current
         let today = cal.startOfDay(for: .now)
-        let completedDays = Set(completions.map { cal.startOfDay(for: $0.date) })
+        let completedDays = Set((completions ?? []).map { cal.startOfDay(for: $0.date) })
         var due = 0
         var done = 0
         for i in 0..<30 {
@@ -83,7 +83,7 @@ final class Habit {
 
     var currentStreak: Int {
         let cal = Calendar.current
-        let days = Set(completions.map { cal.startOfDay(for: $0.date) }).sorted(by: >)
+        let days = Set((completions ?? []).map { cal.startOfDay(for: $0.date) }).sorted(by: >)
         guard !days.isEmpty else { return 0 }
 
         let today = cal.startOfDay(for: .now)
@@ -112,7 +112,7 @@ final class Habit {
 
     var bestStreak: Int {
         let cal = Calendar.current
-        let days = Set(completions.map { cal.startOfDay(for: $0.date) }).sorted()
+        let days = Set((completions ?? []).map { cal.startOfDay(for: $0.date) }).sorted()
         guard days.count > 0 else { return 0 }
 
         var best = 1
@@ -130,7 +130,7 @@ final class Habit {
     }
 
     var totalCompletions: Int {
-        Set(completions.map { Calendar.current.startOfDay(for: $0.date) }).count
+        Set((completions ?? []).map { Calendar.current.startOfDay(for: $0.date) }).count
     }
 
     var habitColor: Color {

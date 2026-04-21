@@ -51,6 +51,8 @@ struct AddHabitView: View {
                 Section("Name") {
                     TextField("e.g. Morning Run", text: $habitName)
                         .focused($isNameFocused)
+                        .submitLabel(.done)
+                        .onSubmit { isNameFocused = false }
                 }
                 frequencySection
                 reminderSection

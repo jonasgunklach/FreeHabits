@@ -22,7 +22,7 @@ enum HabitFrequency: Codable, Hashable {
         case type, weekdays, count
     }
 
-    func encode(to encoder: Encoder) throws {
+    nonisolated func encode(to encoder: Encoder) throws {
         var c = encoder.container(keyedBy: CodingKeys.self)
         switch self {
         case .daily:
@@ -36,7 +36,7 @@ enum HabitFrequency: Codable, Hashable {
         }
     }
 
-    init(from decoder: Decoder) throws {
+    nonisolated init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         let type_ = try c.decode(String.self, forKey: .type)
         switch type_ {

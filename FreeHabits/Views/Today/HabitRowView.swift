@@ -66,11 +66,12 @@ struct HabitRowView: View {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
             let cal = Calendar.current
             if isCompleted {
-                habit.completions
+                (habit.completions ?? [])
                     .filter { cal.isDate($0.date, inSameDayAs: date) }
                     .forEach { modelContext.delete($0) }
             } else {
-                habit.completions.append(HabitCompletion(date: date))
+                if habit.completions == nil { habit.completions = [] }
+                habit.completions!.append(HabitCompletion(date: date))
             }
         }
     }

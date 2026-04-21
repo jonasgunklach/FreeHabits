@@ -13,7 +13,7 @@ struct FreeHabitsApp: App {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var sharedModelContainer: ModelContainer = {
-        let config = ModelConfiguration(cloudKitDatabase: .none)
+        let config = ModelConfiguration(cloudKitDatabase: .private("iCloud.de.jonasgunklach.FreeHabits"))
         do {
             return try ModelContainer(for: Habit.self, HabitCompletion.self, configurations: config)
         } catch {
