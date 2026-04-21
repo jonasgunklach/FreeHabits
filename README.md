@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="FreeHabits/Assets.xcassets/AppIcon.appiconset/AppIcon.png" width="120" style="border-radius: 22px" />
+  <img src="Screenshots/freehabitsicon.png" width="120" style="border-radius: 22px" />
 </p>
 
 # FreeHabits
