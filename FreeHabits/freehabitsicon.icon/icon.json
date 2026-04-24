@@ -1,0 +1,93 @@
+{
+  "fill" : {
+    "linear-gradient" : [
+      "display-p3:1.00000,0.53371,0.22787,1.00000",
+      "display-p3:0.96783,0.49524,0.32858,1.00000"
+    ],
+    "orientation" : {
+      "start" : {
+        "x" : 0.5,
+        "y" : 0
+      },
+      "stop" : {
+        "x" : 0.5,
+        "y" : 0.7
+      }
+    }
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "fill" : {
+            "solid" : "display-p3:1.00000,0.87233,0.87906,1.00000"
+          },
+          "image-name" : "Rectangle 2.png",
+          "name" : "Rectangle 2",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              0,
+              161.046875
+            ]
+          }
+        },
+        {
+          "fill" : {
+            "solid" : "display-p3:0.93881,0.61300,0.32061,1.00000"
+          },
+          "image-name" : "Oval 3.png",
+          "name" : "Oval 3",
+          "position" : {
+            "scale" : 0.8,
+            "translation-in-points" : [
+              -0.2999999999999545,
+              89.74687500000005
+            ]
+          }
+        },
+        {
+          "fill" : {
+            "linear-gradient" : [
+              "display-p3:0.91413,0.90489,0.93881,1.00000",
+              "display-p3:1.00000,0.75711,0.65788,1.00000"
+            ],
+            "orientation" : {
+              "start" : {
+                "x" : 0.5,
+                "y" : 1
+              },
+              "stop" : {
+                "x" : 0.5,
+                "y" : 0.3
+              }
+            }
+          },
+          "image-name" : "Oval 3.png",
+          "name" : "Oval 3",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -0.5,
+              70.546875
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
