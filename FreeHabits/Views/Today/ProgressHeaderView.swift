@@ -23,46 +23,62 @@ struct ProgressHeaderView: View {
     }
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 20) {
             VStack(alignment: .leading, spacing: 6) {
                 Text(date, format: .dateTime.weekday(.wide).month().day())
-                    .font(.subheadline)
+                    .font(.subheadline.weight(.medium))
                     .foregroundStyle(.secondary)
                 if completed == total && total > 0 {
                     Text("All done! 🎉")
-                        .font(.title3.bold())
-                        .foregroundStyle(.green)
+                        .font(.title2.bold())
+                        .foregroundStyle(.primary)
+                } else if total == 0 {
+                    Text("No habits today")
+                        .font(.title2.bold())
                 } else {
-                    Text("\(completed) of \(total) completed")
-                        .font(.title3.bold())
+                    Text("\(completed) of \(total)")
+                        .font(.title2.bold()) +
+                    Text(" done")
+                        .font(.title2)
+                        .foregroundStyle(.secondary)
                 }
+
                 ProgressView(value: progress)
                     .tint(progressColor)
-                    .padding(.top, 2)
+                    .scaleEffect(x: 1, y: 1.6, anchor: .center)
+                    .padding(.top, 4)
                     .animation(.spring(response: 0.5, dampingFraction: 0.7), value: completed)
             }
 
+            Spacer()
+
+            // Large ring
             ZStack {
                 Circle()
-                    .stroke(Color(.systemFill), lineWidth: 6)
+                    .stroke(Color(.systemFill), lineWidth: 8)
                 Circle()
                     .trim(from: 0, to: progress)
-                    .stroke(progressColor, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                    .stroke(
+                        progressColor.gradient,
+                        style: StrokeStyle(lineWidth: 8, lineCap: .round)
+                    )
                     .rotationEffect(.degrees(-90))
-                    .animation(.spring(response: 0.5, dampingFraction: 0.7), value: completed)
+                    .animation(.spring(response: 0.6, dampingFraction: 0.7), value: completed)
                 VStack(spacing: 0) {
                     Text("\(Int(progress * 100))")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
                     Text("%")
-                        .font(.system(size: 9, weight: .medium))
+                        .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(.secondary)
                 }
             }
-            .frame(width: 56, height: 56)
+            .frame(width: 72, height: 72)
         }
-        .padding()
+        .padding(.horizontal, 20)
+        .padding(.vertical, 18)
         .frame(maxWidth: .infinity)
         .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .shadow(color: Color(.label).opacity(0.06), radius: 8, y: 2)
     }
 }

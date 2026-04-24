@@ -21,35 +21,50 @@ struct HabitCardView: View {
         Button {
             toggleCompletion()
         } label: {
-            VStack(spacing: 10) {
+            VStack(spacing: 0) {
+                // Colored top half — icon lives here
                 ZStack {
-                    Circle()
-                        .fill(isCompleted ? habit.habitColor.gradient : habit.habitColor.opacity(0.15).gradient)
-                        .frame(width: 48, height: 48)
-                    Image(systemName: habit.icon)
-                        .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(isCompleted ? .white : habit.habitColor)
-                }
+                    habit.habitColor
+                        .opacity(isCompleted ? 1.0 : 0.82)
 
-                Text(habit.name)
-                    .font(.subheadline.weight(.medium))
-                    .lineLimit(2, reservesSpace: true)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(isCompleted ? .secondary : .primary)
+                    if isCompleted {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 30, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .transition(.scale.combined(with: .opacity))
+                    } else {
+                        Image(systemName: habit.icon)
+                            .font(.system(size: 30, weight: .semibold))
+                            .foregroundStyle(.white)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 76)
+
+                // White/grouped bottom — name + streak
+                VStack(spacing: 4) {
+                    Text(habit.name)
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(2, reservesSpace: true)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(isCompleted ? .secondary : .primary)
+
+                    HStack(spacing: 2) {
+                        Image(systemName: "flame.fill")
+                            .font(.caption2)
+                            .foregroundStyle(habit.currentStreak > 0 ? .orange : Color(.quaternaryLabel))
+                        Text(habit.currentStreak > 0 ? "\(habit.currentStreak)" : "—")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity)
+                .background(Color(.secondarySystemGroupedBackground))
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .padding(.horizontal, 8)
-            .background {
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(isCompleted
-                          ? habit.habitColor.opacity(0.12)
-                          : Color(.secondarySystemGroupedBackground))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .strokeBorder(isCompleted ? habit.habitColor.opacity(0.3) : .clear, lineWidth: 1.5)
-                    )
-            }
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .shadow(color: habit.habitColor.opacity(isCompleted ? 0.35 : 0.18), radius: isCompleted ? 8 : 4, y: 2)
         }
         .buttonStyle(.plain)
         .sensoryFeedback(.impact(weight: .light), trigger: isCompleted)
