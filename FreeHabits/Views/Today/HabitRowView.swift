@@ -13,6 +13,8 @@ struct HabitRowView: View {
     @Bindable var habit: Habit
     var date: Date = Calendar.current.startOfDay(for: .now)
 
+    @State private var burstTrigger = false
+
     private var isCompleted: Bool {
         habit.isCompleted(on: date)
     }
@@ -46,9 +48,14 @@ struct HabitRowView: View {
                     .contentTransition(.symbolEffect(.replace))
             }
             .buttonStyle(.plain)
+            // Particle burst centred on the check circle
+            .overlay {
+                ConfettiBurst(trigger: $burstTrigger, color: habit.habitColor)
+            }
         }
         .padding(.vertical, 4)
-        .sensoryFeedback(.impact(weight: .light), trigger: isCompleted)
+        // Success haptic when completing, light when un-completing
+        .sensoryFeedback(.success, trigger: burstTrigger)
     }
 
     private var habitIcon: some View {
@@ -72,6 +79,7 @@ struct HabitRowView: View {
             } else {
                 if habit.completions == nil { habit.completions = [] }
                 habit.completions!.append(HabitCompletion(date: date))
+                burstTrigger = true
             }
         }
     }

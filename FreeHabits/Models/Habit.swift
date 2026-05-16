@@ -23,6 +23,9 @@ final class Habit {
     var frequencyData: Data?
     /// Time-of-day offset in seconds from midnight for the daily reminder. nil = no reminder.
     var reminderTime: TimeInterval?
+    /// HealthKit data type identifier for auto-tracking (e.g. "workout.running", "mindfulSession").
+    /// nil means the habit is tracked manually only.
+    var healthKitIdentifier: String?
 
     @Relationship(deleteRule: .cascade, inverse: \HabitCompletion.habit)
     var completions: [HabitCompletion]?

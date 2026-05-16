@@ -21,6 +21,8 @@ struct AddHabitView: View {
     @State private var selectedFrequency: HabitFrequency = .daily
     @State private var reminderEnabled = false
     @State private var reminderDate = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: .now) ?? .now
+    @State private var healthLinkEnabled = false
+    @State private var selectedHealthLink: String? = nil
     @FocusState private var isNameFocused: Bool
 
     private let icons: [String] = [
@@ -54,6 +56,9 @@ struct AddHabitView: View {
                     styleCard
                     frequencyCard
                     reminderCard
+                    if HealthKitManager.isAvailable {
+                        healthLinkCard
+                    }
                     addButton
                     Spacer().frame(height: 20)
                 }
@@ -74,6 +79,10 @@ struct AddHabitView: View {
                     selectedIcon = h.icon
                     selectedColor = h.colorName
                     selectedFrequency = h.frequency
+                    if let hkId = h.healthKitIdentifier {
+                        healthLinkEnabled = true
+                        selectedHealthLink = hkId
+                    }
                     if let t = h.reminderTime {
                         reminderEnabled = true
                         let cal = Calendar.current
@@ -290,6 +299,86 @@ struct AddHabitView: View {
         }
     }
 
+    // MARK: - Apple Health Link
+
+    private var healthLinkCard: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label("Apple Health", systemImage: "heart.fill")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 2)
+
+            VStack(spacing: 0) {
+                HStack(spacing: 12) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(Color.pink.opacity(0.15))
+                            .frame(width: 32, height: 32)
+                        Image(systemName: "heart.fill")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.pink)
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Auto-track from Health")
+                            .font(.subheadline.weight(.medium))
+                        Text("Marks complete when logged in Apple Health")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Toggle("", isOn: $healthLinkEnabled)
+                        .labelsHidden()
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
+
+                if healthLinkEnabled {
+                    Divider().padding(.horizontal, 16)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(HealthKitManager.options) { option in
+                                let isSelected = selectedHealthLink == option.id
+                                Button {
+                                    selectedHealthLink = option.id
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: option.sfSymbol)
+                                            .font(.system(size: 13, weight: .semibold))
+                                        Text(option.title)
+                                            .font(.caption.weight(.semibold))
+                                    }
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 8)
+                                    .foregroundStyle(isSelected ? .white : .primary)
+                                    .background(isSelected ? accentColor : Color(.tertiarySystemFill))
+                                    .clipShape(Capsule())
+                                    .shadow(color: isSelected ? accentColor.opacity(0.3) : .clear, radius: 4, y: 2)
+                                }
+                                .buttonStyle(.plain)
+                                .animation(.spring(response: 0.2, dampingFraction: 0.6), value: selectedHealthLink)
+                                .animation(.spring(response: 0.2, dampingFraction: 0.6), value: selectedColor)
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                    }
+
+                    if selectedHealthLink == nil {
+                        Text("Select a Health activity above")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 12)
+                    }
+                }
+            }
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .animation(.spring(response: 0.3), value: healthLinkEnabled)
+        }
+    }
+
     // MARK: - Add Button
 
     private var addButton: some View {
@@ -376,19 +465,26 @@ struct AddHabitView: View {
             ? timeOfDaySeconds(from: reminderDate)
             : nil
 
+        let hkId: String? = healthLinkEnabled ? selectedHealthLink : nil
+
         if let habit = editingHabit {
             habit.name = trimmed
             habit.icon = selectedIcon
             habit.colorName = selectedColor
             habit.frequency = selectedFrequency
             habit.reminderTime = reminderTimeValue
+            habit.healthKitIdentifier = hkId
             NotificationManager.shared.scheduleReminder(for: habit)
         } else {
             let habit = Habit(name: trimmed, icon: selectedIcon, colorName: selectedColor)
             habit.frequency = selectedFrequency
             habit.reminderTime = reminderTimeValue
+            habit.healthKitIdentifier = hkId
             modelContext.insert(habit)
             NotificationManager.shared.scheduleReminder(for: habit)
+        }
+        if healthLinkEnabled {
+            Task { await HealthKitManager.shared.requestAuthorization() }
         }
         dismiss()
     }

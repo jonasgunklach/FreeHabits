@@ -13,6 +13,9 @@ struct HabitCardView: View {
     @Bindable var habit: Habit
     var date: Date = Calendar.current.startOfDay(for: .now)
 
+    @State private var burstTrigger = false
+    @State private var bounceScale: CGFloat = 1.0
+
     private var isCompleted: Bool {
         habit.isCompleted(on: date)
     }
@@ -67,7 +70,14 @@ struct HabitCardView: View {
             .shadow(color: habit.habitColor.opacity(isCompleted ? 0.35 : 0.18), radius: isCompleted ? 8 : 4, y: 2)
         }
         .buttonStyle(.plain)
-        .sensoryFeedback(.impact(weight: .light), trigger: isCompleted)
+        // Scale bounce on complete
+        .scaleEffect(bounceScale)
+        // Particle burst overlay centred on the card
+        .overlay {
+            ConfettiBurst(trigger: $burstTrigger, color: habit.habitColor)
+        }
+        // Upgraded haptics: success notification when completing, light when un-completing
+        .sensoryFeedback(.success, trigger: burstTrigger)
     }
 
     private func toggleCompletion() {
@@ -80,6 +90,13 @@ struct HabitCardView: View {
             } else {
                 if habit.completions == nil { habit.completions = [] }
                 habit.completions!.append(HabitCompletion(date: date))
+
+                // Pop-bounce the card then fire the burst
+                bounceScale = 1.12
+                withAnimation(.spring(response: 0.2, dampingFraction: 0.4).delay(0.05)) {
+                    bounceScale = 1.0
+                }
+                burstTrigger = true
             }
         }
     }

@@ -10,6 +10,8 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var editMode: EditMode = .inactive
     @Query(sort: \Habit.sortOrder) private var habits: [Habit]
 
     @State private var selectedDate: Date = Calendar.current.startOfDay(for: .now)
@@ -49,6 +51,7 @@ struct ContentView: View {
             }
             .navigationTitle(navigationTitle)
             .toolbar { toolbarContent }
+            .environment(\.editMode, $editMode)
             .sheet(isPresented: $showingAddHabit) {
                 AddHabitView()
             }
@@ -88,6 +91,15 @@ struct ContentView: View {
             let pending = activeHabits.filter { !$0.isCompletedToday && $0.isDueToday }.count
             NotificationManager.shared.scheduleEveningNudge(pendingCount: pending)
         }
+        .task {
+            await HealthKitManager.shared.syncTodayCompletions(for: activeHabits, context: modelContext)
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            Task {
+                await HealthKitManager.shared.syncTodayCompletions(for: activeHabits, context: modelContext)
+            }
+        }
     }
 
     // MARK: - Toolbar
@@ -126,10 +138,27 @@ struct ContentView: View {
                         .font(.subheadline.weight(.medium))
                 }
             }
+        } else if editMode == .active {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Done") {
+                    withAnimation { editMode = .inactive }
+                }
+                .fontWeight(.semibold)
+            }
         } else if !activeHabits.isEmpty {
             ToolbarItem(placement: .topBarLeading) {
                 Menu {
-                    EditButton()
+                    Button {
+                        let needsSwitch = useGridView
+                        if needsSwitch {
+                            withAnimation(.easeInOut(duration: 0.25)) { useGridView = false }
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + (needsSwitch ? 0.3 : 0)) {
+                            withAnimation { editMode = .active }
+                        }
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
                     if !archivedHabits.isEmpty {
                         Button {
                             showingArchive = true
@@ -253,6 +282,11 @@ struct ContentView: View {
                     reordered.move(fromOffsets: from, toOffset: to)
                     for (i, habit) in reordered.enumerated() {
                         habit.sortOrder = i
+                    }
+                }
+                .onDelete { offsets in
+                    for index in offsets {
+                        modelContext.delete(activeHabits[index])
                     }
                 }
             }
