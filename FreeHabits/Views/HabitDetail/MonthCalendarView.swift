@@ -112,7 +112,7 @@ struct MonthCalendarView: View {
     }
 
     private var weekdaySymbols: [String] {
-        var syms = calendar.veryShortWeekdaySymbols
+        let syms = calendar.veryShortWeekdaySymbols
         // Rotate to match firstWeekday
         let offset = (calendar.firstWeekday - 1 + syms.count) % syms.count
         return Array(syms[offset...] + syms[..<offset])

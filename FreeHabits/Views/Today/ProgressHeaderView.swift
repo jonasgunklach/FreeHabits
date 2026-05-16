@@ -36,11 +36,13 @@ struct ProgressHeaderView: View {
                     Text("No habits today")
                         .font(.title2.bold())
                 } else {
-                    Text("\(completed) of \(total)")
-                        .font(.title2.bold()) +
-                    Text(" done")
-                        .font(.title2)
-                        .foregroundStyle(.secondary)
+                    HStack(spacing: 0) {
+                        Text("\(completed) of \(total)")
+                            .font(.title2.bold())
+                        Text(" done")
+                            .font(.title2)
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
                 ProgressView(value: progress)
