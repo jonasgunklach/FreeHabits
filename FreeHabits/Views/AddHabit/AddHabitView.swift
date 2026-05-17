@@ -89,8 +89,6 @@ struct AddHabitView: View {
                         let base = cal.startOfDay(for: .now)
                         reminderDate = base.addingTimeInterval(t)
                     }
-                } else {
-                    isNameFocused = true
                 }
             }
         }
@@ -401,27 +399,27 @@ struct AddHabitView: View {
     // MARK: - Frequency Helpers
 
     private enum FrequencyOption: Hashable, CaseIterable {
-        case daily, weekdays, weekends, twice, thrice, five
+        case daily, twice, thrice, four, five, six
 
         var label: String {
             switch self {
-            case .daily:    return "Every day"
-            case .weekdays: return "Weekdays"
-            case .weekends: return "Weekends"
-            case .twice:    return "2× / wk"
-            case .thrice:   return "3× / wk"
-            case .five:     return "5× / wk"
+            case .daily:  return "Every day"
+            case .twice:  return "2×"
+            case .thrice: return "3×"
+            case .four:   return "4×"
+            case .five:   return "5×"
+            case .six:    return "6×"
             }
         }
 
         var icon: String {
             switch self {
-            case .daily:    return "calendar"
-            case .weekdays: return "briefcase.fill"
-            case .weekends: return "sun.max.fill"
-            case .twice:    return "2.circle.fill"
-            case .thrice:   return "3.circle.fill"
-            case .five:     return "5.circle.fill"
+            case .daily:  return "calendar"
+            case .twice:  return "2.circle.fill"
+            case .thrice: return "3.circle.fill"
+            case .four:   return "4.circle.fill"
+            case .five:   return "5.circle.fill"
+            case .six:    return "6.circle.fill"
             }
         }
     }
@@ -430,15 +428,15 @@ struct AddHabitView: View {
         switch selectedFrequency {
         case .daily:
             return .daily
-        case .weekdays(let d) where d.sorted() == [1, 7]:
-            return .weekends
         case .weekdays:
-            return .weekdays
+            return .daily
         case .timesPerWeek(let n):
             switch n {
             case 2: return .twice
             case 3: return .thrice
+            case 4: return .four
             case 5: return .five
+            case 6: return .six
             default: return .daily
             }
         }
@@ -446,12 +444,12 @@ struct AddHabitView: View {
 
     private func setFrequency(_ option: FrequencyOption) {
         switch option {
-        case .daily:    selectedFrequency = .daily
-        case .weekdays: selectedFrequency = .weekdays([2, 3, 4, 5, 6])
-        case .weekends: selectedFrequency = .weekdays([1, 7])
-        case .twice:    selectedFrequency = .timesPerWeek(2)
-        case .thrice:   selectedFrequency = .timesPerWeek(3)
-        case .five:     selectedFrequency = .timesPerWeek(5)
+        case .daily:  selectedFrequency = .daily
+        case .twice:  selectedFrequency = .timesPerWeek(2)
+        case .thrice: selectedFrequency = .timesPerWeek(3)
+        case .four:   selectedFrequency = .timesPerWeek(4)
+        case .five:   selectedFrequency = .timesPerWeek(5)
+        case .six:    selectedFrequency = .timesPerWeek(6)
         }
     }
 

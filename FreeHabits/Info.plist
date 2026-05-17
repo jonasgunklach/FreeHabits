@@ -4,6 +4,10 @@
 <dict>
 	<key>NSHealthShareUsageDescription</key>
 	<string>FreeHabits reads your workout and mindfulness data to automatically mark linked habits as complete.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>FreeHabits does not write any data to Apple Health.</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

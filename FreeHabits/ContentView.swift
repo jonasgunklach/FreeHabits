@@ -96,6 +96,10 @@ struct ContentView: View {
         }
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
+            // Restore reminders that were removed when habits were completed on a previous day.
+            for habit in activeHabits where habit.reminderTime != nil && !habit.isCompletedToday {
+                NotificationManager.shared.scheduleReminder(for: habit)
+            }
             Task {
                 await HealthKitManager.shared.syncTodayCompletions(for: activeHabits, context: modelContext)
             }

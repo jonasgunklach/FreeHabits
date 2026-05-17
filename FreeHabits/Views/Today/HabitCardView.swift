@@ -87,6 +87,9 @@ struct HabitCardView: View {
                 (habit.completions ?? [])
                     .filter { cal.isDate($0.date, inSameDayAs: date) }
                     .forEach { modelContext.delete($0) }
+                if cal.isDateInToday(date) {
+                    NotificationManager.shared.scheduleReminder(for: habit)
+                }
             } else {
                 if habit.completions == nil { habit.completions = [] }
                 habit.completions!.append(HabitCompletion(date: date))
@@ -97,6 +100,9 @@ struct HabitCardView: View {
                     bounceScale = 1.0
                 }
                 burstTrigger = true
+                if cal.isDateInToday(date) {
+                    NotificationManager.shared.removeReminder(for: habit)
+                }
             }
         }
     }
